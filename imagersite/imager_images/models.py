@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
+from sorl.thumbnail import ImageField
 
 
 PUBLISHED_STATUS = (
@@ -18,7 +19,7 @@ class ImagerPhoto(models.Model):
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
                              related_name='photos')
-    photo = models.ImageField(upload_to='images')
+    photo = ImageField(upload_to='images')
     published = models.CharField(
         max_length=2,
         choices=PUBLISHED_STATUS,
@@ -38,9 +39,10 @@ class ImagerAlbum(models.Model):
                              on_delete=models.CASCADE,
                              related_name='albums')
     title = models.CharField(default='', max_length=50)
-    photo = models.ManyToManyField(ImagerPhoto,
-                                   default='', related_name='albums')
-    cover = models.ForeignKey(ImagerPhoto, null=True, related_name='+')
+    photos = models.ManyToManyField(ImagerPhoto, blank=True,
+                                    default='', related_name='albums')
+    cover = models.ForeignKey(ImagerPhoto, blank=True, null=True,
+                              related_name='+')
     published = models.CharField(
         max_length=2,
         choices=PUBLISHED_STATUS,
